@@ -9,10 +9,10 @@
 ![Downloads](https://img.shields.io/badge/Downloads-1k%2B-brightgreen?style=for-the-badge)
 ![Stars](https://img.shields.io/badge/Stars-⭐%20%20%20%20%20-yellow?style=for-the-badge)
 
-![GitHub release](https://img.shields.io/github/v/release/TUO_USERNAME/Astral-Exynos2200-ABS?style=flat-square&color=blueviolet)
-![Git Downloads](https://img.shields.io/github/downloads/TUO_USERNAME/Astral-Exynos2200-ABS/total?style=flat-square&color=success)
-![Git Issues](https://img.shields.io/github/issues/TUO_USERNAME/Astral-Exynos2200-ABS?style=flat-square&color=orange)
-![Git License](https://img.shields.io/github/license/TUO_USERNAME/Astral-Exynos2200-ABS?style=flat-square)
+![GitHub release](https://img.shields.io/github/v/release/gigaastral/Astral-Exynos2200-ABS?style=flat-square&color=blueviolet)
+![Git Downloads](https://img.shields.io/github/downloads/gigaastral/Astral-Exynos2200-ABS/total?style=flat-square&color=success)
+![Git Issues](https://img.shields.io/github/issues/gigaastral/Astral-Exynos2200-ABS?style=flat-square&color=orange)
+![Git License](https://img.shields.io/github/license/gigaastral/Astral-Exynos2200-ABS?style=flat-square)
 
 ![Undervolting](https://img.shields.io/badge/Undervolting-8%25-red?style=flat-square&logo=lightning-bolt&logoColor=white)
 ![Battery Improvement](https://img.shields.io/badge/Battery-30%25%2B-green?style=flat-square&logo=battery-full&logoColor=white)
