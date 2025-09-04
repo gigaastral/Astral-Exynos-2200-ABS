@@ -1,0 +1,15 @@
+# ⚡ Astral Exynos 2200 ABS Properties
+debug.performance.tuning=1
+debug.sf.hw=1
+video.accelerate.hw=1
+persist.sys.ui.hw=1
+ro.config.hw_fast_dormancy=1
+ro.config.hw_power_saving=1
+ro.ril.power_collapse=1
+pm.sleep_mode=1
+wifi.supplicant_scan_interval=240
+persist.sys.power_saving=1
+
+# Exynos-specific optimizations
+ro.exynos.perf=0
+ro.exynos.gpu.optimize=1
