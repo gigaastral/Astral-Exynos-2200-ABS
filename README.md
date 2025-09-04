@@ -5,7 +5,7 @@
 ![Exynos](https://img.shields.io/badge/Exynos-2200-0078D4?style=for-the-badge&logo=samsung&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge&logo=opensourceinitiative&logoColor=white)
 
-![Version](https://img.shields.io/badge/Version-2.1.0-blueviolet?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-1.0-blueviolet?style=for-the-badge)
 ![Downloads](https://img.shields.io/badge/Downloads-1k%2B-brightgreen?style=for-the-badge)
 ![Stars](https://img.shields.io/badge/Stars-⭐%20%20%20%20%20-yellow?style=for-the-badge)
 
