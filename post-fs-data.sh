@@ -7,7 +7,7 @@ LOG_TAG="Astral-ABS"
 apply_minimal_optimizations() {
     # Safe write function
     safe_write() {
-        [ -f "$1" ] && echo "$2" > "$1"
+        [ -f "$1" ] && echo "$2" > "$1" 2>/dev/null
     }
     
     # Only essential undervolting during boot
@@ -15,7 +15,7 @@ apply_minimal_optimizations() {
     safe_write "/sys/kernel/percent_margin/cpucl1_margin_percent" "-8"
     safe_write "/sys/kernel/percent_margin/g3d_margin_percent" "-8"
     
-    # Quick CPU governor setting
+    # Quick CPU governor setting for all cores
     for cpu in 0 1 2 3 4 5 6 7; do
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_governor" "powersave"
     done
