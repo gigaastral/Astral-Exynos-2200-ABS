@@ -32,7 +32,7 @@ Advanced Battery Saver module for Samsung Exynos 2200 devices. Triple-cluster op
 
 - ✅ Samsung Galaxy S22 Series (Exynos variant)
 - ✅ Samsung Galaxy S23 FE
-- ✅ Any Samsung device should work
+- ❓ Any Samsung device should work
 
 ## 📥 Installation
 
