@@ -1,0 +1,73 @@
+# Combina TUTTE le proprietà di entrambi i moduli
+debug.performance.tuning=1
+debug.sf.hw=1
+video.accelerate.hw=1
+persist.sys.ui.hw=1
+ro.config.hw_fast_dormancy=1
+ro.config.hw_power_saving=1
+ro.ril.power_collapse=1
+pm.sleep_mode=1
+wifi.supplicant_scan_interval=180
+persist.sys.power_saving=1
+
+# Exynos-specific
+ro.exynos.perf=1
+ro.exynos.gpu.optimize=1
+
+# GPU e display da e2200opt
+debug.egl.buffcount=4
+persist.sys.fflag.override.settings_enable_monitor_phantom_procs=false
+max_phantom_processes=2147483647
+
+# Game optimization
+persist.vendor.dfps.level=120
+ro.vendor.cabc.enable=true
+ro.vendor.bcbc.enable=true
+persist.vendor.power.dfps.level=0
+ro.vendor.display.default_fps=120
+vendor.display.use_layer_ext=0
+persist.vendor.vcb.ability=true
+persist.vendor.vcb.enable=true
+vendor.display.enable_optimize_refresh=1
+vendor.display.enable_optimize_refresh=true
+
+# Performance
+persist.sampling_profiler=0
+debug.egl.hw=0
+debug.sf.hw=0
+hw3d.force=1
+ro.config.enable.hw_accel=true
+ro.product.gpu.driver=1
+ro.secure=0
+ro.fb.mode=1
+ro.sf.compbypass.enable=0
+video.accelerate.hw=1
+hw2d.force=1
+debug.gr.numframebuffers=3
+debug.egl.swapinterval=0
+ro.config.hw_quickpoweron=true
+power.saving.mode=1
+persist.radio.add_power_save=1
+ro.ril.sensor.sleep.control=1
+ro.config.nocheckin=1
+
+# VSYNC
+hwui.disable_vsync=true
+hwui.render_dirty_regions=false
+debug.cpurend.vsync=false
+
+# Disable DYN. FPS
+ro.vendor.dfps.enable=false
+ro.vendor.smart_dfps.enable=false
+
+# More RAM
+dalvik.vm.dexopt-flags=m=y
+persist.sys.purgeable_assets=1
+
+# ZRAM
+ro.vendor.qti.config.zram=true
+ro.vendor.qti.sys.fw.bg_apps_limit=600
+ro.vendor.qti.sys.fw.bservice_limit=60
+
+# Force 4x MSAA
+debug.egl.force_msaa=1
