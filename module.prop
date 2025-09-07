@@ -1,0 +1,6 @@
+id=astral_exynos2200_abs
+name=🔋 Astral Exynos 2200 ABS 🔋
+version=v3
+versionCode=3
+author=gigaastral
+description=Advanced Battery Saver module for Exynos 2200 SoCs. Includes CPU/GPU undervolting, frequency limits, power management, thermal control and many more!
