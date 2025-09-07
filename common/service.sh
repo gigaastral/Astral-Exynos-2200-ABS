@@ -9,8 +9,13 @@ log_message() {
 safe_write() {
     if [ -f "$1" ]; then
         echo "$2" > "$1" 2>/dev/null
-        log_message "✓ $1 = $2"
-        return 0
+        if [ $? -eq 0 ]; then
+            log_message "✓ $1 = $2"
+            return 0
+        else
+            log_message "✗ Failed to write $1 = $2"
+            return 1
+        fi
     fi
     return 1
 }
@@ -20,11 +25,14 @@ while [ `getprop vendor.post_boot.parsed` != "1" ]; do
     sleep 1
 done
 
-sleep 2
+sleep 5
 
 # ================= TUTTE LE IMPOSTAZIONI E2200OPT =================
 apply_e2200opt_settings() {
     log_message "Applying all e2200opt optimizations..."
+    
+    # Aggiungi un ulteriore ritardo per garantire la stabilità del sistema
+    sleep 10
     
     # Kernel scheduler settings
     safe_write "/proc/sys/kernel/sched_wakeup_granularity_ns" "3000000"
@@ -57,16 +65,13 @@ apply_e2200opt_settings() {
     sysctl -w kernel.panic_on_oops=0
     sysctl -w kernel.softlockup_panic=0
 
-    # ZRAM settings
-    chmod 644 /dev/block/zram0
-    safe_write "/sys/block/zram0/comp_algorithm" "lz4"
-    swapoff /dev/block/zram0 > /dev/null 2>&1
-    safe_write "/sys/block/zram0/reset" "1"
-    safe_write "/sys/block/zram0/disksize" "0"
-    safe_write "/sys/block/zram0/max_comp_streams" "4"
-    safe_write "/sys/block/zram0/disksize" "1610612736"
-    mkswap /dev/block/zram0 > /dev/null 2>&1
-    swapon /dev/block/zram0 > /dev/null 2>&1
+    # ZRAM settings - MODIFICATO: Rimuovo la parte rischiosa del reset
+    if [ -f "/sys/block/zram0/comp_algorithm" ]; then
+        safe_write "/sys/block/zram0/comp_algorithm" "lz4"
+    fi
+    if [ -f "/sys/block/zram0/max_comp_streams" ]; then
+        safe_write "/sys/block/zram0/max_comp_streams" "4"
+    fi
 
     # VM settings
     safe_write "/proc/sys/vm/vfs_cache_pressure" "150"
@@ -77,7 +82,6 @@ apply_e2200opt_settings() {
     safe_write "/proc/sys/vm/dirty_ratio" "25"
     safe_write "/proc/sys/vm/dirty_background_ratio" "10"
     safe_write "/proc/sys/vm/vfs_cache_pressure" "200"
-    safe_write "/proc/sys/vm/drop_caches" "3"
     safe_write "/proc/sys/vm/oom_kill_allocating_task" "0"
 
     # PTY and keys settings
@@ -105,46 +109,31 @@ apply_e2200opt_settings() {
         safe_write "/sys/devices/system/cpu/cpu$cpu/online" "1"
     done
 
-    # CPU frequency settings
-    safe_write "/sys/devices/platform/exynos-migov/cl0/cl0_pm_qos_min_freq" "1824000"
-    chown root /sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq
-    safe_write "/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq" "1824000"
-
-    safe_write "/sys/devices/platform/exynos-migov/cl1/cl1_pm_qos_max_freq" "2515000"
-    chown root /sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq
-    safe_write "/sys/devices/system/cpu/cpufreq/policy4/scaling_max_freq" "2515000"
-
-    safe_write "/sys/devices/platform/exynos-migov/cl2/cl2_pm_qos_max_freq" "2808000"
-    chown root /sys/devices/system/cpu/cpufreq/policy7/scaling_max_freq
-    safe_write "/sys/devices/system/cpu/cpufreq/policy7/scaling_max_freq" "2808000"
-	
-	 # ================= CPU FREQUENCY MANAGEMENT =================
-    # Cortex-A510 cluster (cpu0-cpu3) - 1.5GHz max
+    # CPU frequency settings - MODIFICATO: Rimuovo i conflitti
+    # Cluster 1 (A55) - 1.632GHz max
     for cpu in 0 1 2 3; do
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_governor" "powersave"
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_max_freq" "1632000"
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_min_freq" "400000"
     done
 
-    # Cortex-A710 cluster (cpu4-cpu6) - 2.2GHz max  
+    # Cluster 2 (A710) - 2.304GHz max  
     for cpu in 4 5 6; do
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_governor" "powersave"
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_max_freq" "2304000"
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_min_freq" "576000"
     done
 
-    # Cortex-X2 prime core (cpu7) - 2.5GHz max
+    # Cluster 3 (X2) - 2.611GHz max
     safe_write "/sys/devices/system/cpu/cpu7/cpufreq/scaling_governor" "powersave"
     safe_write "/sys/devices/system/cpu/cpu7/cpufreq/scaling_max_freq" "2611000"
     safe_write "/sys/devices/system/cpu/cpu7/cpufreq/scaling_min_freq" "672000"
 
-    chmod 0444 /sys/devices/system/cpu/cpufreq/policy*/scaling_max_freq
-	
-	# ================= XCLIPSE GPU OPTIMIZATION =================
+    # ================= XCLIPSE GPU OPTIMIZATION =================
     # Governor GPU - conservative per bilanciare performance e batteria
     safe_write "/sys/kernel/gpu/gpu_governor" "conservative"
     
-    # Frequenza massima GPU - 807MHz per risparmio energetico
+    # Frequenza massima GPU - 999MHz come richiesto
     safe_write "/sys/kernel/gpu/gpu_max_clock" "999000"
     
     # Frequenza minima GPU - 303MHz per risparmio
@@ -230,12 +219,6 @@ apply_e2200opt_settings() {
     safe_write "/proc/sys/net/ipv4/tcp_fastopen" "3"
     safe_write "/proc/sys/net/ipv4/conf/all/secure_redirects" "1"
 
-    # CPU topology permissions
-    for cpu in 0 1 2 3 4 5 6 7; do
-        chmod 000 /sys/devices/system/cpu/cpu$cpu/topology/physical_package_id
-        chmod 000 /sys/devices/system/cpu/cpu$cpu/topology/core_id
-    done
-
     # ================= TUO UNDERCLOCK ORIGINALE (-8) =================
     safe_write "/sys/kernel/percent_margin/g3d_margin_percent" "-8"
     safe_write "/sys/kernel/percent_margin/cpucl0_margin_percent" "-8"
@@ -257,8 +240,6 @@ apply_e2200opt_settings() {
     safe_write "/sys/kernel/percent_margin/aud_margin_percent" "-7"
     safe_write "/sys/kernel/percent_margin/alive_margin_percent" "-3"
 
-    chmod 0644 /sys/kernel/percent_margin/*
-
     # Devfreq settings
     safe_write "/sys/class/devfreq/17000040.devfreq_disp/max_freq" "800000"
     safe_write "/sys/class/devfreq/17000040.devfreq_disp/min_freq" "800000"
@@ -271,19 +252,6 @@ apply_e2200opt_settings() {
     safe_write "/sys/class/devfreq/17000010.devfreq_mif/max_freq" "3172000"
     safe_write "/sys/class/devfreq/17000010.devfreq_mif/min_freq" "3172000"
     safe_write "/sys/class/devfreq/17000010.devfreq_mif/target_freq" "3172000"
-    safe_write "/sys/class/devfreq/17000010.devfreq_mif/exynos_data/debug_scaling_devfreq_min" "3172000"
-    safe_write "/sys/class/devfreq/17000010.devfreq_mif/exynos_data/debug_scaling_devfreq_max" "3172000"
-
-    # GPU permissions
-    chmod 0644 /sys/kernel/gpu/gpu_freq_table
-    chmod 0644 /sys/kernel/gpu/gpu_model
-    chmod 0644 /sys/kernel/gpu/gpu_max_clock
-    chmod 0644 /sys/kernel/gpu/gpu_min_clock
-
-    # Devfreq permissions
-    chmod 0644 /sys/class/devfreq/17000040.devfreq_disp/*
-    chmod 0644 /sys/class/devfreq/17000070.devfreq_aud/*
-    chmod 0644 /sys/class/devfreq/17000010.devfreq_mif/*
 
     log_message "All e2200opt settings applied with your -8 undervolt"
 }
@@ -300,26 +268,24 @@ while true; do
     safe_write "/sys/kernel/percent_margin/cpucl1_margin_percent" "-8"
     safe_write "/sys/kernel/percent_margin/cpucl2_margin_percent" "-8"
     safe_write "/sys/kernel/percent_margin/g3d_margin_percent" "-8"
-	
-	for cpu in 0 1 2 3; do
+    
+    # Mantieni le frequenze CPU come richiesto
+    for cpu in 0 1 2 3; do
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_governor" "powersave"
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_max_freq" "1632000"
-        safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_min_freq" "400000"
     done
   
     for cpu in 4 5 6; do
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_governor" "powersave"
         safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_max_freq" "2304000"
-        safe_write "/sys/devices/system/cpu/cpu$cpu/cpufreq/scaling_min_freq" "576000"
     done
 
     safe_write "/sys/devices/system/cpu/cpu7/cpufreq/scaling_governor" "powersave"
     safe_write "/sys/devices/system/cpu/cpu7/cpufreq/scaling_max_freq" "2611000"
-    safe_write "/sys/devices/system/cpu/cpu7/cpufreq/scaling_min_freq" "672000"
-	
-	safe_write "/sys/kernel/gpu/gpu_governor" "conservative"
+    
+    # Mantieni le impostazioni GPU
+    safe_write "/sys/kernel/gpu/gpu_governor" "conservative"
     safe_write "/sys/kernel/gpu/gpu_max_clock" "999000"
-    safe_write "/sys/kernel/gpu/gpu_min_clock" "303000"
 
     log_message "Maintenance completed - All optimizations active"
 done
