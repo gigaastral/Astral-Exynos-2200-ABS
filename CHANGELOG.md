@@ -65,7 +65,7 @@
 - **Printk Optimization**: Console suspend enabled
 
 ### 🎯 CPU Frequency & Voltage Control
-- **Your Original Undervolt Settings**:
+- **Original Undervolt Settings**:
   - CPU Cluster 0: `-8%`
   - CPU Cluster 1: `-8%`
   - CPU Cluster 2: `-8%`
@@ -231,4 +231,5 @@ Initial release
 Basic CPU undervolting (-8%)
 Frequency limiting for all clusters
 Powersave governor implementation
+
 Basic GPU optimization
